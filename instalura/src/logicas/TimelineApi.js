@@ -20,7 +20,7 @@ export default class TimeLineApi {
                     'Content-type': 'application/json'
                 })
             };
-
+ 
             fetch(`https://instalura-api.herokuapp.com/api/fotos/${fotoId}/comment?X-AUTH-TOKEN=${localStorage.getItem('auth-token')}`, requestInfo)
                 .then(response => {
                     if (response.ok) {
