@@ -1,3 +1,5 @@
+import { listagem, comentario, like, notifica } from '../actions/actionCreator';
+
 export default class TimeLineApi {
 
     static lista(urlPerfil) {
@@ -5,7 +7,7 @@ export default class TimeLineApi {
             fetch(urlPerfil)
                 .then(response => response.json())
                 .then(fotos => {
-                    dispatch({ type: 'LISTAGEM', fotos });
+                    dispatch(listagem(fotos));
                     return fotos;
                 });
         }
@@ -20,7 +22,7 @@ export default class TimeLineApi {
                     'Content-type': 'application/json'
                 })
             };
- 
+
             fetch(`https://instalura-api.herokuapp.com/api/fotos/${fotoId}/comment?X-AUTH-TOKEN=${localStorage.getItem('auth-token')}`, requestInfo)
                 .then(response => {
                     if (response.ok) {
@@ -30,7 +32,7 @@ export default class TimeLineApi {
                     }
                 })
                 .then(novoComentario => {
-                    dispatch({ type: 'COMENTARIO', fotoId, novoComentario });
+                    dispatch(comentario(fotoId, novoComentario));
                     return novoComentario;
                 });
         }
@@ -48,8 +50,23 @@ export default class TimeLineApi {
                     }
                 })
                 .then(liker => {
-                    dispatch({ type: 'LIKE', fotoId, liker });
+                    dispatch(like(fotoId, liker));
                     return liker;
+                });
+        }
+    }
+
+    static pesquisa(login) {
+        return dispatch => {
+            fetch(`https://instalura-api.herokuapp.com/api/public/fotos/${login}`)
+                .then(response => response.json())
+                .then(fotos => {
+                    if (fotos.legth === 0) {
+                        dispatch(notifica('usuário não encontrado'));
+                    } else {
+                        dispatch(notifica('usuario encontrado'));
+                    }
+                    dispatch(listagem(fotos));
                 });
         }
     }
